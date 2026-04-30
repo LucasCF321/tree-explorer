@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Arvore API" },
+      { name: "description", content: "Tree Explorer visualizes hierarchical data structures, enabling interactive exploration of tree traversals and searches." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Arvore API" },
+      { property: "og:description", content: "Tree Explorer visualizes hierarchical data structures, enabling interactive exploration of tree traversals and searches." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Arvore API" },
+      { name: "twitter:description", content: "Tree Explorer visualizes hierarchical data structures, enabling interactive exploration of tree traversals and searches." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/31574df1-eace-42ed-812d-957872735219/id-preview-ebb52afb--5c7e97b8-c406-4c99-bd4c-aaa27f7dc3b0.lovable.app-1777508202841.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/31574df1-eace-42ed-812d-957872735219/id-preview-ebb52afb--5c7e97b8-c406-4c99-bd4c-aaa27f7dc3b0.lovable.app-1777508202841.png" },
     ],
     links: [
       {
