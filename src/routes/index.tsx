@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TreeVisualizer } from "@/components/TreeVisualizer";
+import { DocsDialog } from "@/components/DocsDialog";
 import { Toaster } from "@/components/ui/sonner";
 import { TreePine, Github } from "lucide-react";
 
@@ -39,15 +40,18 @@ function Index() {
             </p>
           </div>
         </div>
-        <a
-          href="https://pokeapi.co"
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs text-muted-foreground hover:text-accent transition-smooth flex items-center gap-1.5"
-        >
-          <Github className="w-3.5 h-3.5" />
-          PokéAPI
-        </a>
+        <div className="flex items-center gap-2">
+          <DocsDialog />
+          <a
+            href="https://pokeapi.co"
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-muted-foreground hover:text-accent transition-smooth flex items-center gap-1.5"
+          >
+            <Github className="w-3.5 h-3.5" />
+            PokéAPI
+          </a>
+        </div>
       </header>
 
       <TreeVisualizer />
