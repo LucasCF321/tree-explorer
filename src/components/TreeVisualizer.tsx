@@ -441,9 +441,12 @@ function VisualizerInner() {
         <MetricsPanel tree={tree} selected={selected} />
 
         <Card className="p-4 bg-card/80 backdrop-blur border-border">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
             Editar Árvore
           </h3>
+          <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+            <code className="text-accent">insert</code> anexa um novo <code className="text-accent">TreeNode</code> ao pai selecionado. <code className="text-accent">remove</code> tira o nó e toda a sua subárvore (raiz protegida).
+          </p>
           <div className="space-y-2">
             <div className="flex gap-2">
               <Input
@@ -453,7 +456,7 @@ function VisualizerInner() {
                 className="bg-input"
                 onKeyDown={(e) => e.key === "Enter" && handleAddChild()}
               />
-              <Button onClick={handleAddChild} disabled={!selectedId || !newNodeName} size="icon">
+              <Button onClick={handleAddChild} disabled={!selectedId || !newNodeName} size="icon" title="Inserir filho no nó selecionado (Tree.insert)">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
@@ -466,10 +469,11 @@ function VisualizerInner() {
                 disabled={!selectedId || selectedId === tree.root?.id}
                 variant="outline"
                 className="flex-1"
+                title="Remove o nó selecionado e sua subárvore (Tree.remove)"
               >
                 <Trash2 className="w-4 h-4" /> Remover
               </Button>
-              <Button onClick={handleExport} variant="secondary" size="icon">
+              <Button onClick={handleExport} variant="secondary" size="icon" title="Exportar árvore como JSON (Tree.toJSON + Blob)">
                 <Download className="w-4 h-4" />
               </Button>
             </div>
