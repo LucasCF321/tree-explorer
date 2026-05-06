@@ -7,7 +7,14 @@ interface MetricsPanelProps {
   selected: TreeNode | null;
 }
 
+/**
+ * MetricsPanel — painel lateral direito que exibe estatísticas em tempo real
+ * sobre a árvore inteira (altura total, número de nós) e sobre o nó
+ * selecionado pelo usuário (grau, profundidade, altura da subárvore,
+ * quantidade de filhos), tudo calculado pelos métodos estáticos da `Tree`.
+ */
 export function MetricsPanel({ tree, selected }: MetricsPanelProps) {
+  // Métricas globais — recalculadas a cada render porque a árvore pode mudar
   const totalHeight = Tree.height(tree.root);
   const totalSize = tree.size();
 
@@ -70,6 +77,10 @@ export function MetricsPanel({ tree, selected }: MetricsPanelProps) {
   );
 }
 
+/**
+ * Metric — pequeno cartão visual reutilizável (ícone + rótulo + valor).
+ * Usado para padronizar a exibição de cada métrica do painel.
+ */
 function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
     <div className="bg-muted/40 rounded-lg p-2.5">
