@@ -305,6 +305,9 @@ function VisualizerInner() {
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Cadeia de Evolução
           </h3>
+          <p className="text-[11px] text-muted-foreground mb-2 leading-relaxed">
+            Faz <code className="text-accent">fetch</code> na PokéAPI e converte a resposta aninhada em uma árvore n-ária via <code className="text-accent">buildNode</code> (recursivo).
+          </p>
           <div className="flex gap-2">
             <Select
               value={String(chainId)}
