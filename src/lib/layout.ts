@@ -8,9 +8,9 @@ export interface PositionedNode {
   node: TreeNode;
 }
 
-const H_GAP = 60; // horizontal gap between leaf siblings
-const V_GAP = 140; // vertical gap between levels
-const NODE_W = 160;
+const H_GAP = 60; // espaço horizontal entre folhas irmãs
+const V_GAP = 140; // espaço vertical entre níveis
+const NODE_W = 160; // largura visual de um nó
 
 interface Internal {
   node: TreeNode;
@@ -20,12 +20,17 @@ interface Internal {
   children: Internal[];
 }
 
+/**
+ * buildLayout — percorre a árvore em pós-ordem calculando, para cada
+ * subárvore, sua largura total e a posição X de seu nó-raiz centralizada
+ * sobre os filhos. Base do algoritmo Reingold–Tilford simplificado.
+ */
 function buildLayout(node: TreeNode, depth: number): Internal {
   if (node.children.length === 0) {
     return { node, x: 0, y: depth * V_GAP, width: NODE_W, children: [] };
   }
   const children = node.children.map((c) => buildLayout(c, depth + 1));
-  // place children sequentially
+  // posiciona os filhos sequencialmente lado a lado
   let cursor = 0;
   for (const c of children) {
     shift(c, cursor - leftEdge(c));
@@ -38,6 +43,10 @@ function buildLayout(node: TreeNode, depth: number): Internal {
   return { node, x: centerX, y: depth * V_GAP, width: Math.max(totalWidth, NODE_W), children };
 }
 
+/**
+ * leftEdge — encontra o menor X dentro de uma subárvore, usado para
+ * empurrar a subárvore inteira sem que ela colida com a vizinha à esquerda.
+ */
 function leftEdge(n: Internal): number {
   let min = n.x;
   const stack = [...n.children];
@@ -49,15 +58,24 @@ function leftEdge(n: Internal): number {
   return min;
 }
 
+/**
+ * shift — desloca recursivamente uma subárvore inteira em `dx` no eixo X,
+ * preservando o layout interno relativo entre seus nós.
+ */
 function shift(n: Internal, dx: number) {
   n.x += dx;
   for (const c of n.children) shift(c, dx);
 }
 
+/**
+ * layoutTree — função pública. Recebe a raiz da `Tree` e devolve uma lista
+ * achatada `[{ id, x, y, node }]` consumida pelo React Flow para desenhar
+ * o grafo top-down sem sobreposição de nós. Complexidade: O(n).
+ */
 export function layoutTree(root: TreeNode | null): PositionedNode[] {
   if (!root) return [];
   const internal = buildLayout(root, 0);
-  // normalize x so min is 0
+  // normaliza X para que o menor valor seja 0 (origem do canvas)
   let minX = Infinity;
   const collect = (n: Internal) => {
     if (n.x < minX) minX = n.x;

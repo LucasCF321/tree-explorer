@@ -9,9 +9,21 @@ export interface PokeNodeData {
   depth: number;
 }
 
+/**
+ * PokeNode — componente customizado renderizado pelo React Flow para
+ * cada nó da árvore. Mostra a arte do Pokémon, nome, grau e profundidade,
+ * e aplica classes Tailwind condicionais conforme o `state`:
+ *  - "active":   nó selecionado pelo usuário (anel verde-água, escala maior)
+ *  - "visiting": nó sendo visitado pela animação atual (anel amarelo piscando)
+ *  - "visited":  nó já percorrido pelo algoritmo (esmaecido)
+ *  - "found":    nó encontrado por uma busca (anel verde de sucesso)
+ *  - "idle":     estado padrão (sem destaque)
+ * Os <Handle> são os pontos de conexão usados pelas arestas do React Flow.
+ */
 export function PokeNode({ data }: NodeProps<PokeNodeData>) {
   const { name, imageUrl, state, degree, depth } = data;
 
+  // Classe visual derivada do estado atual de visita do nó
   const stateClass =
     state === "active"
       ? "ring-2 ring-active shadow-active scale-105"

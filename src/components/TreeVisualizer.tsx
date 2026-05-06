@@ -76,12 +76,16 @@ function VisualizerInner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView } = useReactFlow();
 
-  // Load initial chain
+  // Carrega a cadeia padrão (Eevee) quando o componente monta
   useEffect(() => {
     void loadChain(chainId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * loadChain — busca uma cadeia de evolução da PokéAPI e popula a árvore.
+   * Reseta os estados visuais (animações) e seleciona automaticamente a raiz.
+   */
   const loadChain = async (id: number) => {
     setLoading(true);
     try {
@@ -98,7 +102,8 @@ function VisualizerInner() {
     }
   };
 
-  // Rebuild nodes & edges whenever tree changes
+  // Reconstrói nós e arestas do React Flow sempre que a árvore, a seleção
+  // ou os estados de animação mudam. Aqui a estrutura lógica vira visual.
   useEffect(() => {
     const positioned = layoutTree(tree.root);
     const newNodes: Node<PokeNodeData>[] = positioned.map((p) => ({
@@ -137,6 +142,11 @@ function VisualizerInner() {
     [selectedId, tree, version],
   );
 
+  /**
+   * sleep — pausa cancelável baseada em requestAnimationFrame.
+   * Diferente de `setTimeout`, respeita o `cancelRef` para parar
+   * imediatamente quando o usuário clica em "Parar".
+   */
   const sleep = (ms: number) =>
     new Promise<void>((resolve) => {
       const start = Date.now();
@@ -148,6 +158,12 @@ function VisualizerInner() {
       tick();
     });
 
+  /**
+   * animate — coração da visualização didática.
+   * Recebe a ordem de visita produzida por um algoritmo (DFS, BFS, etc.) e
+   * percorre essa lista marcando cada nó como "visiting" (amarelo), espera
+   * o intervalo definido pelo usuário e em seguida marca como `finalState`.
+   */
   const animate = async (order: string[], finalState: NodeState = "visited") => {
     if (running) return;
     setRunning(true);
@@ -165,6 +181,10 @@ function VisualizerInner() {
     setRunning(false);
   };
 
+  /**
+   * runAlgorithm — dispara o algoritmo selecionado nas abas (DFS / BFS /
+   * Pré / Pós / Em-ordem), pega a ordem retornada e anima a visita dos nós.
+   */
   const runAlgorithm = async () => {
     if (!tree.root) return;
     let order: string[] = [];
@@ -179,6 +199,11 @@ function VisualizerInner() {
     await animate(order);
   };
 
+  /**
+   * runSearch — busca por nome (BFS), anima o caminho da raiz até o nó
+   * encontrado e o destaca em verde ("found"). Se não houver match,
+   * exibe um toast de erro.
+   */
   const runSearch = async () => {
     if (!tree.root || !searchQuery.trim()) return;
     const path = tree.searchByName(searchQuery);
@@ -204,12 +229,20 @@ function VisualizerInner() {
     toast.success(`Encontrado em ${path.length - 1} passos`);
   };
 
+  /**
+   * stop — interrompe imediatamente qualquer animação em curso ativando
+   * o `cancelRef` (lido pelo `sleep` e pelos loops de animação).
+   */
   const stop = () => {
     cancelRef.current = true;
     setRunning(false);
     setNodeStates({});
   };
 
+  /**
+   * handleAddChild — adiciona um novo nó como filho do nó selecionado.
+   * Gera um id único combinando nome + timestamp e dispara `tree.insert`.
+   */
   const handleAddChild = () => {
     if (!selectedId || !newNodeName.trim()) return;
     const id = `${newNodeName.toLowerCase()}-${Date.now()}`;
@@ -221,6 +254,10 @@ function VisualizerInner() {
     }
   };
 
+  /**
+   * handleRemove — remove o nó selecionado (e toda a subárvore abaixo dele).
+   * Bloqueia a remoção da raiz para preservar a integridade da árvore.
+   */
   const handleRemove = () => {
     if (!selectedId) return;
     if (selectedId === tree.root?.id) {
@@ -235,6 +272,10 @@ function VisualizerInner() {
     }
   };
 
+  /**
+   * handleExport — serializa a árvore inteira em JSON via `tree.toJSON()`
+   * e dispara o download de um arquivo `.json` no navegador (Blob + <a>).
+   */
   const handleExport = () => {
     const json = JSON.stringify(tree.toJSON(), null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -247,6 +288,11 @@ function VisualizerInner() {
     toast.success("Árvore exportada");
   };
 
+  /**
+   * onNodeClick — callback do React Flow ao clicar em um nó.
+   * Atualiza `selectedId`, o que alimenta o painel de métricas
+   * e o formulário de inserção de filhos.
+   */
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedId(node.id);
   }, []);

@@ -1,18 +1,32 @@
 // Generic n-ary tree data structure with traversal & search algorithms.
 // All algorithms return ordered arrays of node IDs so the UI can animate them.
 
+/**
+ * Dados utilitários armazenados em cada nó da árvore.
+ * Mantém o conteúdo "de domínio" (nome, imagem, metadados) separado
+ * da estrutura algorítmica (parent/children).
+ */
 export interface NodeData {
   name: string;
   imageUrl?: string;
   meta?: Record<string, string | number>;
 }
 
+/**
+ * TreeNode — representa um nó da árvore n-ária.
+ * Cada nó conhece seu pai (ponteiro para cima) e seus filhos
+ * (lista — pode ter 0..N), permitindo navegar nos dois sentidos.
+ */
 export class TreeNode {
   id: string;
   data: NodeData;
   parent: TreeNode | null;
   children: TreeNode[];
 
+  /**
+   * Constrói um nó já amarrado a um pai (ou null se for raiz).
+   * Inicializa a lista de filhos vazia. Complexidade: O(1).
+   */
   constructor(id: string, data: NodeData, parent: TreeNode | null = null) {
     this.id = id;
     this.data = data;
@@ -20,12 +34,22 @@ export class TreeNode {
     this.children = [];
   }
 
+  /**
+   * Adiciona um filho a este nó e ajusta o ponteiro `parent` do filho.
+   * Essa integridade bidirecional é o que permite `pathTo` e `depth`
+   * funcionarem subindo pelos parents. Complexidade: O(1).
+   */
   addChild(child: TreeNode) {
     child.parent = this;
     this.children.push(child);
   }
 }
 
+/**
+ * Tree — encapsula a raiz da árvore e expõe todos os algoritmos clássicos:
+ * busca (DFS/BFS), travessias (pré/pós/em-ordem), métricas (altura, grau,
+ * profundidade), mutações (insert/remove) e serialização (toJSON/fromJSON).
+ */
 export class Tree {
   root: TreeNode | null;
 
@@ -34,6 +58,12 @@ export class Tree {
   }
 
   // ---------- Lookup ----------
+
+  /**
+   * Busca um nó pelo seu id usando DFS iterativo com pilha explícita.
+   * Usamos pilha (e não recursão) para evitar stack-overflow em árvores
+   * muito profundas. Complexidade: O(n) tempo · O(h) espaço.
+   */
   findById(id: string): TreeNode | null {
     if (!this.root) return null;
     const stack: TreeNode[] = [this.root];
@@ -45,7 +75,11 @@ export class Tree {
     return null;
   }
 
-  // Search by data.name (case-insensitive substring) — returns first match path
+  /**
+   * Busca o primeiro nó cujo `data.name` contém `query` (case-insensitive)
+   * percorrendo em largura (BFS — encontra o mais próximo da raiz primeiro).
+   * Retorna o caminho da raiz até o nó encontrado (ou []). O(n).
+   */
   searchByName(query: string): string[] {
     if (!this.root || !query.trim()) return [];
     const q = query.trim().toLowerCase();
@@ -57,6 +91,10 @@ export class Tree {
     return this.pathTo(found);
   }
 
+  /**
+   * Reconstrói o caminho da raiz até o nó de id `id` subindo pelos
+   * ponteiros `parent`. Complexidade: O(h) (h = altura da árvore).
+   */
   pathTo(id: string): string[] {
     const node = this.findById(id);
     if (!node) return [];
@@ -70,6 +108,11 @@ export class Tree {
   }
 
   // ---------- Mutations ----------
+
+  /**
+   * Insere `child` como filho do nó cujo id é `parentId`.
+   * Retorna false se o pai não existir. Complexidade: O(n) (busca do pai).
+   */
   insert(parentId: string, child: TreeNode): boolean {
     const parent = this.findById(parentId);
     if (!parent) return false;
@@ -77,6 +120,10 @@ export class Tree {
     return true;
   }
 
+  /**
+   * Remove o nó `id` (e por consequência toda a subárvore abaixo dele).
+   * Caso especial: remover a raiz zera a árvore. Complexidade: O(n).
+   */
   remove(id: string): boolean {
     if (!this.root) return false;
     if (this.root.id === id) {
@@ -90,12 +137,21 @@ export class Tree {
   }
 
   // ---------- Metrics ----------
+
+  /**
+   * Altura de uma subárvore: 1 + max(altura dos filhos).
+   * Folha tem altura 1; null tem altura 0. Implementação recursiva. O(n).
+   */
   static height(node: TreeNode | null): number {
     if (!node) return 0;
     if (node.children.length === 0) return 1;
     return 1 + Math.max(...node.children.map((c) => Tree.height(c)));
   }
 
+  /**
+   * Profundidade do nó = quantos `parent` precisamos subir até a raiz.
+   * Raiz tem profundidade 0. Complexidade: O(h).
+   */
   static depth(node: TreeNode): number {
     let d = 0;
     let cur = node.parent;
@@ -106,15 +162,26 @@ export class Tree {
     return d;
   }
 
+  /**
+   * Grau de um nó = número de filhos diretos. Complexidade: O(1).
+   */
   static degree(node: TreeNode): number {
     return node.children.length;
   }
 
+  /**
+   * Número total de nós da árvore (calculado via BFS). Complexidade: O(n).
+   */
   size(): number {
     return this.bfs().length;
   }
 
   // ---------- Traversals (return id order) ----------
+
+  /**
+   * Pré-ordem: visita a RAIZ antes dos FILHOS (recursivo da esquerda
+   * para a direita). Útil para clonar/serializar árvores. O(n).
+   */
   preOrder(node: TreeNode | null = this.root, acc: string[] = []): string[] {
     if (!node) return acc;
     acc.push(node.id);
@@ -122,6 +189,10 @@ export class Tree {
     return acc;
   }
 
+  /**
+   * Pós-ordem: visita os FILHOS antes da RAIZ. Útil para deletar árvores
+   * com segurança ou calcular tamanhos de subárvore de baixo pra cima. O(n).
+   */
   postOrder(node: TreeNode | null = this.root, acc: string[] = []): string[] {
     if (!node) return acc;
     for (const c of node.children) this.postOrder(c, acc);
@@ -129,7 +200,10 @@ export class Tree {
     return acc;
   }
 
-  // For n-ary: visit first child, then root, then remaining children
+  /**
+   * Em-ordem adaptado para n-ária: 1º FILHO → RAIZ → DEMAIS FILHOS.
+   * Em árvore binária equivale a esquerda → raiz → direita. O(n).
+   */
   inOrder(node: TreeNode | null = this.root, acc: string[] = []): string[] {
     if (!node) return acc;
     if (node.children.length === 0) {
@@ -143,7 +217,13 @@ export class Tree {
   }
 
   // ---------- Search ----------
-  // DFS using explicit stack — O(n)
+
+  /**
+   * DFS — Busca em Profundidade com pilha explícita.
+   * Empilha os filhos em ordem reversa para que o filho mais à esquerda
+   * seja visitado primeiro (mantém a ordem natural). Para ao achar `targetId`.
+   * Complexidade: O(n) tempo · O(h) espaço.
+   */
   dfs(targetId?: string): string[] {
     if (!this.root) return [];
     const order: string[] = [];
@@ -158,7 +238,11 @@ export class Tree {
     return order;
   }
 
-  // BFS using queue — O(n)
+  /**
+   * BFS — Busca em Largura com fila. Visita nível por nível, garantindo
+   * encontrar o nó-alvo mais próximo da raiz primeiro.
+   * Complexidade: O(n) tempo · O(w) espaço (w = largura máxima).
+   */
   bfs(targetId?: string): string[] {
     if (!this.root) return [];
     const order: string[] = [];
@@ -173,6 +257,11 @@ export class Tree {
   }
 
   // ---------- Serialization ----------
+
+  /**
+   * Serializa a árvore recursivamente para um objeto plano
+   * `{ id, data, children: [...] }` — usado pelo botão "Exportar". O(n).
+   */
   toJSON(node: TreeNode | null = this.root): unknown {
     if (!node) return null;
     return {
@@ -182,6 +271,10 @@ export class Tree {
     };
   }
 
+  /**
+   * Reconstrói a árvore a partir do JSON gerado por `toJSON`,
+   * religando os ponteiros `parent` durante a descida recursiva. O(n).
+   */
   static fromJSON(json: any, parent: TreeNode | null = null): TreeNode | null {
     if (!json) return null;
     const node = new TreeNode(json.id, json.data, parent);
