@@ -358,7 +358,10 @@ function VisualizerInner() {
               <TabsTrigger value="post" className="text-xs">Pós</TabsTrigger>
             </TabsList>
           </Tabs>
-          <p className="text-[11px] text-muted-foreground mt-2 font-mono">
+          <p className="text-[11px] text-foreground/80 mt-2 leading-relaxed">
+            {ALGO_DESCRIPTION[algorithm]}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1 font-mono">
             {ALGO_COMPLEXITY[algorithm]}
           </p>
 
