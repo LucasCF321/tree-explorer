@@ -396,9 +396,12 @@ function VisualizerInner() {
         </Card>
 
         <Card className="p-4 bg-card/80 backdrop-blur border-border">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
             Buscar por Nome
           </h3>
+          <p className="text-[11px] text-muted-foreground mb-2 leading-relaxed">
+            <code className="text-accent">searchByName</code> roda BFS e devolve o caminho da raiz até o 1º match. A animação destaca esse caminho e marca o alvo em verde.
+          </p>
           <div className="flex gap-2">
             <Input
               value={searchQuery}
