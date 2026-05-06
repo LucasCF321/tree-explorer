@@ -58,6 +58,14 @@ const ALGO_COMPLEXITY: Record<Algorithm, string> = {
   in: "O(n) tempo · O(h) espaço",
 };
 
+const ALGO_DESCRIPTION: Record<Algorithm, string> = {
+  dfs: "Busca em Profundidade — desce até a folha mais à esquerda antes de voltar. Implementada com pilha explícita (evita stack overflow).",
+  bfs: "Busca em Largura — visita nível por nível. Implementada com fila; encontra o alvo mais próximo da raiz primeiro.",
+  pre: "Pré-ordem (RAIZ → FILHOS) — visita o nó antes de descer. Útil para clonar/serializar a árvore.",
+  post: "Pós-ordem (FILHOS → RAIZ) — visita os filhos antes do nó. Útil para deletar com segurança ou somar subárvores.",
+  in: "Em-ordem n-ária (1º FILHO → RAIZ → DEMAIS FILHOS) — generalização do percurso esquerda-raiz-direita das árvores binárias.",
+};
+
 function VisualizerInner() {
   const [tree, setTree] = useState<Tree>(() => new Tree());
   const [version, setVersion] = useState(0); // bump after mutations
