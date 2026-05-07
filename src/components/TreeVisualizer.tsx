@@ -451,20 +451,48 @@ function VisualizerInner() {
             <code className="text-accent">insert</code> anexa um novo <code className="text-accent">TreeNode</code> ao pai selecionado. <code className="text-accent">remove</code> tira o nó e toda a sua subárvore (raiz protegida).
           </p>
           <div className="space-y-2">
+            <label className="text-[11px] text-muted-foreground uppercase tracking-wider">
+              Pai do novo nó
+            </label>
+            <Select
+              value={parentIdForInsert ?? selectedId ?? ""}
+              onValueChange={(v) => setParentIdForInsert(v)}
+            >
+              <SelectTrigger className="bg-input">
+                <SelectValue placeholder="Selecione o pai..." />
+              </SelectTrigger>
+              <SelectContent>
+                {tree.bfs().map((id) => {
+                  const n = tree.findById(id);
+                  if (!n) return null;
+                  const depth = Tree.depth(n);
+                  return (
+                    <SelectItem key={id} value={id}>
+                      {"— ".repeat(depth)}{n.data.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
             <div className="flex gap-2">
               <Input
                 value={newNodeName}
                 onChange={(e) => setNewNodeName(e.target.value)}
-                placeholder="Novo filho..."
+                placeholder="Nome do novo nó..."
                 className="bg-input"
                 onKeyDown={(e) => e.key === "Enter" && handleAddChild()}
               />
-              <Button onClick={handleAddChild} disabled={!selectedId || !newNodeName} size="icon" title="Inserir filho no nó selecionado (Tree.insert)">
+              <Button
+                onClick={handleAddChild}
+                disabled={!(parentIdForInsert ?? selectedId) || !newNodeName}
+                size="icon"
+                title="Inserir filho no pai escolhido (Tree.insert)"
+              >
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Adiciona como filho do nó selecionado.
+              Escolha o pai no seletor acima ou clique num nó do gráfico para selecioná-lo automaticamente.
             </p>
             <div className="flex gap-2 pt-2">
               <Button
