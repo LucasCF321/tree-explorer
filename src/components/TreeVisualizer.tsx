@@ -75,6 +75,7 @@ function VisualizerInner() {
   const [algorithm, setAlgorithm] = useState<Algorithm>("bfs");
   const [searchQuery, setSearchQuery] = useState("");
   const [newNodeName, setNewNodeName] = useState("");
+  const [parentIdForInsert, setParentIdForInsert] = useState<string | null>(null);
   const [speed, setSpeed] = useState<number[]>([600]);
   const [nodeStates, setNodeStates] = useState<Record<string, NodeState>>({});
   const [running, setRunning] = useState(false);
