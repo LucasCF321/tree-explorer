@@ -253,13 +253,15 @@ function VisualizerInner() {
    * Gera um id único combinando nome + timestamp e dispara `tree.insert`.
    */
   const handleAddChild = () => {
-    if (!selectedId || !newNodeName.trim()) return;
+    const parentId = parentIdForInsert ?? selectedId;
+    if (!parentId || !newNodeName.trim()) return;
     const id = `${newNodeName.toLowerCase()}-${Date.now()}`;
     const newNode = new TreeNode(id, { name: newNodeName.trim() });
-    if (tree.insert(selectedId, newNode)) {
+    if (tree.insert(parentId, newNode)) {
       setNewNodeName("");
       setVersion((v) => v + 1);
-      toast.success(`"${newNode.data.name}" adicionado`);
+      const parentNode = tree.findById(parentId);
+      toast.success(`"${newNode.data.name}" adicionado em "${parentNode?.data.name}"`);
     }
   };
 
